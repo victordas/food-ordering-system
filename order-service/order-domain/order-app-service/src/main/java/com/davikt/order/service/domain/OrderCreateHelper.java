@@ -72,6 +72,6 @@ public class OrderCreateHelper {
         if (orderResult == null) {
             throw new OrderDomainException("Failed to save the order");
         }
-        log.info("OrderId: {} is saved successfully", order.getId().getValue());
+        log.info("OrderId: {} is saved successfully", orderResult.getId().getValue());
     }
 }

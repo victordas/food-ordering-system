@@ -67,19 +67,12 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     }
 
     private void setOrderProductInformation(Order order, Restaurant restaurant) {
-        Map<Product, Product> restaurantProductMap = restaurant.getProducts().stream()
-                .collect(Collectors.toMap(Function.identity(), Function.identity()));
-
-        order.getItems().forEach(orderItem -> {
+        order.getItems().forEach(orderItem -> restaurant.getProducts().forEach(restaurantProduct -> {
             Product currentProduct = orderItem.getProduct();
-            Product restaurantProduct = restaurantProductMap.get(currentProduct);
-
-            if (restaurantProduct != null) {
-                currentProduct.updateWithConfirmedNameAndPrice(
-                        restaurantProduct.getName(),
-                        restaurantProduct.getPrice()
-                );
+            if (currentProduct.equals(restaurantProduct)) {
+                currentProduct.updateWithConfirmedNameAndPrice(restaurantProduct.getName(),
+                        restaurantProduct.getPrice());
             }
-        });
+        }));
     }
 }

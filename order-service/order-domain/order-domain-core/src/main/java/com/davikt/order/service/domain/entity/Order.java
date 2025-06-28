@@ -94,7 +94,7 @@ public class Order extends AggregateRoot<OrderId> {
         }).reduce(Money.ZERO, Money::add);
 
         if(!total.equals(orderItemsTotal)) {
-            throw new OrderDomainException(String.format("Total price: %.2f must be equal to OrderItems total: %.2f.", total.getAmount(), orderItemsTotal.getAmount()));
+            throw new OrderDomainException(String.format("Total price: %.2f is not equal to OrderItems total: %.2f.", total.getAmount(), orderItemsTotal.getAmount()));
         }
     }
 
