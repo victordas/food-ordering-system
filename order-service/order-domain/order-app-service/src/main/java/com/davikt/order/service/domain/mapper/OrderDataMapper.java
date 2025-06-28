@@ -7,6 +7,7 @@ import com.davikt.domain.valueobject.RestaurantId;
 import com.davikt.order.service.domain.dto.create.CreateOrderCommand;
 import com.davikt.order.service.domain.dto.create.CreateOrderResponse;
 import com.davikt.order.service.domain.dto.create.OrderAddress;
+import com.davikt.order.service.domain.dto.track.TrackOrderResponse;
 import com.davikt.order.service.domain.entity.Order;
 import com.davikt.order.service.domain.entity.OrderItem;
 import com.davikt.order.service.domain.entity.Product;
@@ -45,6 +46,10 @@ public class OrderDataMapper {
                 order.getOrderStatus(),
                 null
         );
+    }
+
+    public TrackOrderResponse orderToTrackOrderResponse(Order order) {
+        return new TrackOrderResponse(order.getTrackingId().getValue(), order.getOrderStatus(), order.getFailureMessages());
     }
 
     private List<OrderItem> orderItemsToOrderItemEntities(@NonNull List<com.davikt.order.service.domain.dto.create.OrderItem> items) {
