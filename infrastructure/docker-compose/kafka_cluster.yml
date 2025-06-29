@@ -1,0 +1,139 @@
+services:
+  kafka-1:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION}
+    hostname: kafka-1
+    container_name: kafka-1
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      # KRaft specific configs
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - ./data/kafka-1:/tmp/kraft-combined-logs
+    networks:
+      - ${GLOBAL_NETWORK:-kafka}
+
+  kafka-2:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION}
+    hostname: kafka-2
+    container_name: kafka-2
+    ports:
+      - "9093:9093"
+      - "9102:9102"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-2:29092,PLAINTEXT_HOST://localhost:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_JMX_PORT: 9102
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      # KRaft specific configs
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - ./data/kafka-2:/tmp/kraft-combined-logs
+    networks:
+      - ${GLOBAL_NETWORK:-kafka}
+
+  kafka-3:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION}
+    hostname: kafka-3
+    container_name: kafka-3
+    ports:
+      - "9094:9094"
+      - "9103:9103"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-3:29092,PLAINTEXT_HOST://localhost:9094'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9094'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_JMX_PORT: 9103
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      # KRaft specific configs
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - ./data/kafka-3:/tmp/kraft-combined-logs
+    networks:
+      - ${GLOBAL_NETWORK:-kafka}
+
+  # Optional: Kafka UI for easier management
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9101
+    networks:
+      - ${GLOBAL_NETWORK:-kafka}
+
+  # Redpanda Console UI
+  redpanda-console:
+    image: redpandadata/console:latest
+    container_name: redpanda-console
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - "8081:8080"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+    volumes:
+      - ./redpanda-console-config.yml:/tmp/config.yml:ro
+    networks:
+      - ${GLOBAL_NETWORK:-kafka}
+
+
+volumes:
+  kafka-1-data:
+  kafka-2-data:
+  kafka-3-data:
